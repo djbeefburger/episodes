@@ -8,7 +8,7 @@ class Episodic{
 
 
   public
-    $volumes,$
+    $volumes;
   
   public function __construct($config){
     //read the csv that contains all episode data into an associative array with a single header row
@@ -133,5 +133,38 @@ class Episodic{
   
 }
 
+class ArrayJam{
+	static function unsetEmpty(&$arrs){
+    foreach($arrs as $k=>$arr)
+      $arrs[$k]=array_filter($arr, fn($value) => !is_null($value) && $value !== ''));
+  }
+  
+  static function getUniqueValuesByFieldname($arrs,$fieldname){
+    foreach($arrs as $arr){
+      $output[(string)$arr[$fieldname]]=true;
+    }
+    return array_keys($output);
+  }
+  
+  static function getUniqueValuesByFieldnames($arrs,$fieldnamesarr){
+    foreach($arrs as $arr){
+      $arr=array_intersect_key($arr,array_flip($fieldnamesarr));
+      $output[implode('-',$arr)]=$arr;//there is an unhandled edge case where concatenation doesn't yield a unique value, but it's unlikely
+    }
+    return array_values($output);
+  }
+  static function whereFieldEquals($arrs,$fieldname,$value){
+    foreach($arrs as $k=>$arr){
+      if($arr[$fieldname]!=$value)unset($arrs[$k]);
+    }
+    return $arr;
+  }
+
+
+}
+      
+    
+
+}
 
 ?>
