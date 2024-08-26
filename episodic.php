@@ -1,6 +1,6 @@
 <?php
 
-class Episodic{
+class Episodic extends ArrayJam{
  
   
   private 
