@@ -19,14 +19,15 @@ class Episodic extends ArrayJam{
     //parse out keywords for search table
     
     $this->_episodeCsvFile=(empty($config['episodeCsvFile'])?"episodes.csv":$config['episodeCsvFile']);
-    die("meow".$this->_episodeCsvFile);
-    $this->getEpisodesCsv();
+    //die("meow".$this->_episodeCsvFile);
+    $this->getEpisodeCsv();
     print_r($this->episodes);
 
   }
 
   public function getEpisodeCsv(){
     $row = 0;
+
     if (($handle = fopen($this->_episodeCsvFile, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if($row==0){
@@ -37,7 +38,8 @@ class Episodic extends ArrayJam{
         $row++;
       }
       fclose($handle);
-    } 
+    }
+
     return !empty($this->episodes);
   }
 /*  
