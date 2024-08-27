@@ -27,7 +27,7 @@ class Episodic extends ArrayJam{
 
   public function getEpisodeCsv(){
     $row = 0;
-    if (($handle = fopen("$this->_episodeCsvFile", "r")) !== FALSE) {
+    if (($handle = fopen($this->_episodeCsvFile, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if($row==0){
           $header_row=$data;
