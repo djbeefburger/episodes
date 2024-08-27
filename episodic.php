@@ -19,6 +19,7 @@ class Episodic extends ArrayJam{
     //parse out keywords for search table
     
     $this->_episodeCsvFile=(empty($config['episodeCsvFile'])?"episodes.csv":$config['episodeCsvFile']);
+    die($this->_episodeCsvFile);
     $this->getEpisodesCsv();
     print_r($this->episodes);
     //$this->_templateFile=(empty($config['templateFile'])?"template.json":$config['templateFile']);
@@ -119,7 +120,7 @@ class Episodic extends ArrayJam{
       return $tiles;
     }
     else{
-      $filtered_ids=array_keys($this->_tags[$tag])
+      $filtered_ids=array_keys($this->_tags[$tag]);
       foreach($filtered_ids as $id)$tiles[$id]=$this->getTile($id);
       foreach($tiles as $id=>$tile)if(empty($tiles[$id]))unset($tiles[$id]);
       return $tiles;
@@ -150,7 +151,7 @@ class Episodic extends ArrayJam{
 class ArrayJam{
 	static function unsetEmpty(&$arrs){
     foreach($arrs as $k=>$arr)
-      $arrs[$k]=array_filter($arr, fn($value) => !is_null($value) && $value !== ''));
+      $arrs[$k]=array_filter($arr, fn($value) => !is_null($value) && $value !== '');
   }
   
   static function getUniqueValuesByFieldname($arrs,$fieldname){
@@ -176,9 +177,6 @@ class ArrayJam{
 
 
 }
-      
-    
 
-}
 
 ?>
