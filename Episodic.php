@@ -4,11 +4,11 @@ class Episodic extends ArrayJam{
  
   
   private 
-    $_episodeCsvFile,$_templateFile,$_template,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites,$_tags;
+    $_episodesCsvFile,$_templateFile,$_template,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites,$_tags;
 
 
   public
-    $episodes;
+    $episodes,$episodes_errors;
   
   public function __construct($config){
     //read the csv that contains all episode data into an associative array with a single header row
@@ -18,30 +18,44 @@ class Episodic extends ArrayJam{
     //parse episode info 
     //parse out keywords for search table
     
-    $this->_episodeCsvFile=(empty($config['episodeCsvFile'])?"episodes.csv":$config['episodeCsvFile']);
-    //die("meow".$this->_episodeCsvFile);
-    $this->getEpisodeCsv();
-    print_r($this->episodes);
+    $this->_episodesCsvFile=(empty($config['episodesCsvFile'])?"episodes.csv":$config['episodesCsvFile']);
+    //die("meow".$this->_episodesCsvFile);
+    $this->getEpisodesCsv();
+    //print_r($this->episodes);
+    //die('hoorah');
 
   }
 
-  public function getEpisodeCsv(){
+  public function getEpisodesCsv(){
     $row = 0;
-
-    if (($handle = fopen($this->_episodeCsvFile, "r")) !== FALSE) {
-      die('feeble');
+    $this->episodes=array();
+    $this->episodes_errors=array();
+    ini_set('auto_detect_line_endings',TRUE);
+    if (($handle = fopen($this->_episodesCsvFile, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if($row==0){
           $header_row=$data;
+          $howbig=count($header_row);
+          echo "There should be $howbig columns per row".PHP_EOL;
+          
         }else{
-          $this->episodes[]=array_combine($header_row,$data);
+          //print_r(array_combine($header_row,$data));
+          //die('feebleee');
+          if(count($data)==$howbig)
+            $this->episodes[]=array_combine($header_row,$data);
+          else
+            print_r($data);//echo "bad";//$this->episodes_errors[]=$data;
         }
         $row++;
       }
+            
       fclose($handle);
-    }
+      
 
-    return !empty($this->episodes);
+    }
+    print_r($this->episodes);
+    die('boorah');
+    return !(empty($this->episodes));
   }
 /*  
   private function setTileDataDir($str){
