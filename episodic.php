@@ -8,7 +8,7 @@ class Episodic extends ArrayJam{
 
 
   public
-    $volumes;
+    $episodes;
   
   public function __construct($config){
     //read the csv that contains all episode data into an associative array with a single header row
@@ -19,8 +19,10 @@ class Episodic extends ArrayJam{
     //parse out keywords for search table
     
     $this->_episodeCsvFile=(empty($config['episodeCsvFile'])?"episodes.csv":$config['episodeCsvFile']);
-    $this->_templateFile=(empty($config['templateFile'])?"template.json":$config['templateFile']);
-    return ($this->getTemplate() && $this->getEpisodesCsv());
+    $this->getEpisodesCsv();
+    print_r($this->episodes);
+    //$this->_templateFile=(empty($config['templateFile'])?"template.json":$config['templateFile']);
+    //return ($this->getTemplate() && $this->getEpisodesCsv());
     
   }
 
@@ -30,7 +32,19 @@ class Episodic extends ArrayJam{
   }
 
   public function getEpisodeCsv(){
-    return false;
+    $row = 0;
+    if (($handle = fopen("$this->_episodeCsvFile", "r")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        if($row==0){
+          $header_row=$data;
+        }else{
+          $this->episodes[]=array_combine($header_row,$data);
+        }
+        $row++;
+      }
+      fclose($handle);
+    } 
+    return !empty($this->episodes);
   }
   
   private function setTileDataDir($str){
