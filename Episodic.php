@@ -8,22 +8,16 @@ class Episodic extends ArrayJam{
 
 
   public
-    $episodes,$episodes_errors;
+    $episodes,$episodes_errors,$volumes;
   
   public function __construct($config){
     //read the csv that contains all episode data into an associative array with a single header row
     //row[]=array(row[0][0]=>row[1][0],row[0][1]=>row[1][1],etc)
-    //unset empty fields? (need to see if this improves load times)
-    //parse out volumes (seasons)
-    //parse episode info 
-    //parse out keywords for search table
-    
     $this->_episodesCsvFile=(empty($config['episodesCsvFile'])?"episodes.csv":$config['episodesCsvFile']);
     //die("meow".$this->_episodesCsvFile);
     $this->getEpisodesCsv();
-    //print_r($this->episodes);
-    //die('hoorah');
-
+    $this->getVolumes();
+    
   }
 
   public function getEpisodesCsv(){
@@ -36,7 +30,7 @@ class Episodic extends ArrayJam{
         if($row==0){
           $header_row=$data;
           $howbig=count($header_row);
-          echo "There should be $howbig columns per row".PHP_EOL;
+          //echo "There should be $howbig columns per row".PHP_EOL;
           
         }else{
           //print_r(array_combine($header_row,$data));
@@ -44,7 +38,7 @@ class Episodic extends ArrayJam{
           if(count($data)==$howbig)
             $this->episodes[]=array_combine($header_row,$data);
           else
-            print_r($data);//echo "bad";//$this->episodes_errors[]=$data;
+            $this->episodes_errors[]=$data;
         }
         $row++;
       }
@@ -53,9 +47,14 @@ class Episodic extends ArrayJam{
       
 
     }
-    print_r($this->episodes);
-    die('boorah');
+    
     return !(empty($this->episodes));
+    
+  }
+  
+  public function getVolumes(){
+      
+    $this->volumes=parent::getUniqueValuesByFieldnames($this->episodes,array('Tracking_id','Volume','Volume Title'));    
   }
 /*  
   private function setTileDataDir($str){
@@ -160,10 +159,29 @@ class Episodic extends ArrayJam{
 
 class ArrayJam{
   
-  static function unsetEmpty(&$arrs){
+  static function unsetEmpty($arrs){
     foreach($arrs as $k=>$arr)
       $arrs[$k]=array_filter($arr, fn($value) => !is_null($value) && $value !== '');
+    return $arrs;
   }
+  
+  static function setFieldnameIndex($arrs,$fieldname,$preserve_duplicates=false,$collapse_unique=true){
+    //assume the in
+    if($preserve_duplicates){
+      foreach($arrs as $arr)
+        $output[$arr[$fieldname]][]=$arr;
+      if($collapse_unique)
+        foreach($output as $k=>$arrs)
+          if(count($arrs)==1)
+            $output[$k]=$output[$k][0];
+    }else{
+      foreach($arrs as $arr)
+        $output[$arr[$fieldname]]=$arr;
+    }
+    return $output;
+  }
+  
+  static function keepFields($arrs,$fieldname)
   
   static function getUniqueValuesByFieldname($arrs,$fieldname){
     foreach($arrs as $arr){
