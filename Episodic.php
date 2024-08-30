@@ -54,7 +54,11 @@ class Episodic extends ArrayJam{
   
   public function getVolumes(){
       
-    $this->volumes=parent::getUniqueValuesByFieldnames($this->episodes,array('Tracking_id','Volume','Volume Title'));    
+    //$this->volumes=parent::getUniqueValuesByFieldnames($this->episodes,array('Tracking_id','Volume','Volume Title'));    
+  $this->volumes=parent::setIndexRecursive($this->episodes,array('Volume','Tracking_id'));
+  print_r($this->volumes);
+  die("fart");
+      
   }
 /*  
   private function setTileDataDir($str){
@@ -179,6 +183,19 @@ class ArrayJam{
         $output[$arr[$fieldname]]=$arr;
     }
     return $output;
+  }
+  
+  static function setIndexRecursive($arrs,$fieldnames,$preserve_duplicates=true,$collapse_unique=true){
+    $fieldname=array_shift($fieldnames);
+    if(empty($fieldnames))
+      return self::setFieldnameIndex($arrs,$fieldname,$preserve_duplicates,$collapse_unique);
+    else{
+      foreach($arrs as $arr)
+        $output[$arr[$fieldname]][]=$arr;
+      foreach($output as $k=>$arrs)
+        $output[$k]=self::setIndexRecursive($arrs,$fieldnames,$preserve_duplicates,$collapse_unique);
+      return $output;
+    }
   }
   
   static function keepFields($arrs,$fieldname)
